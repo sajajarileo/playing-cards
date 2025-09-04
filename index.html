@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <title>Playing Cards</title>
+  <link rel="icon" href="https://lh3.googleusercontent.com/pw/AP1GczPG_etOLYxP08IcrCm7HFSqSBTlMB2SIfQoz6NufxOjXjJMKFB7lng5M5ZI3-bdtbQvLLWgJQLQ7IkQjiID72BuWAuPDYiTsr9tnmqAifYdUGQSd6aXYFpIvOqs0VLDERSB7VlBNAdPsbQfRSTrLMs=w923-h923-s-no-gm?authuser=0">
+  <style>
+    * {transition: all 1s, background 0s, color 0s;}
+    
+    body {background-color: crimson;}
+    [class*='card'] {
+      --rotateX: 0;
+      --content: '';
+      
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%) rotateX(var(--rotateX));
+      transform-style: preserve-3d;
+
+      width: 120px;
+      aspect-ratio: 63 / 88;
+      border-radius: 8%;
+      background-color: #fff;
+      color: #000;
+
+      cursor: pointer;
+    }
+
+    [class*='card']::after, [class*='card']::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      padding: 6%;
+      border-radius: inherit;
+      box-sizing: border-box;
+      background: repeating-linear-gradient(60deg, #fff6 0%, #fff6 2%, transparent 2%, transparent 8%), repeating-linear-gradient(-60deg, #fff6 0%, #fff6 2%, transparent 2%, transparent 8%), #000 content-box;
+      /* content-box 나이스하네 */
+      color: inherit;
+      backface-visibility: hidden;
+      white-space: pre;
+    }
+
+    [class*='card']::after {
+      content: var(--content);
+      transform: rotateX(180deg);
+      padding: 8%;
+      background: #fff;
+
+      display: flex;
+      justify-content: flex-start;
+
+      font-size: 1.25rem;
+      font-weight: bold;
+      line-height: 1.4;
+      text-align: center;
+      box-shadow: 2px 2px 4px #0008;
+    }
+
+    [class*='card'].joker::after {
+      content: 'J\A O\A K\A E\A R';
+      background: #000 url(https://lh3.googleusercontent.com/pw/AP1GczPG_etOLYxP08IcrCm7HFSqSBTlMB2SIfQoz6NufxOjXjJMKFB7lng5M5ZI3-bdtbQvLLWgJQLQ7IkQjiID72BuWAuPDYiTsr9tnmqAifYdUGQSd6aXYFpIvOqs0VLDERSB7VlBNAdPsbQfRSTrLMs=w923-h923-s-no-gm?authuser=0) 1.3em center / calc(100% - 1.5em) no-repeat;
+      color: #fff;
+      align-items: center;
+    }
+
+    .flop {--rotateX: 180deg; transition-delay: 0s!important;}
+
+    #card-top {
+      border-right: solid 16px #ccc;
+      border-bottom: solid 12px #aaa;
+      box-shadow: 2px 2px 4px #0008;
+      color: #aaa;
+      z-index: 1;
+    }
+    
+    #card-top:not(.dealing):not([style*='pointer-events: none'])::after {
+      content: 'CLICK!';
+      position: absolute;
+      left: 50%; transform: translate(-50%, -100%);
+      width: 80%; height: auto;
+      aspect-ratio: 3 / 2;
+      border-radius: 0;
+      background-color: #fff;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 65% 80%, 50% 100%, 35% 80%, 0% 80%);
+      color: crimson;
+      justify-content: center;
+      z-index: -1;
+      cursor: default;
+      animation: card-top-after 1s ease infinite alternate;
+    }
+    
+    @keyframes card-top-after {
+      from {top: -8px;}
+      to {top: -16px;}
+    }
+
+    @scope (.dealing ~ .card-hand) {
+    :scope:nth-of-type(-n + 3) {top: 20%;}
+    :scope:nth-last-of-type(-n + 3) {top: 80%;}
+    :scope:nth-of-type(even):not(:last-of-type) {left: 20%;}
+    :scope:nth-of-type(odd):not(:first-of-type) {left: 80%;}
+
+    :scope:nth-of-type(7) {transition-delay: 0.2s;}
+    :scope:nth-of-type(8) {transition-delay: 0.4s;}
+    :scope:nth-of-type(6) {transition-delay: 0.6s;}
+    :scope:nth-of-type(4) {transition-delay: 0.8s;}
+    :scope:nth-of-type(2) {transition-delay: 1s;}
+    :scope:nth-of-type(1) {transition-delay: 1.2s;}
+    :scope:nth-of-type(3) {transition-delay: 1.4s;}
+
+    :scope::before {animation: outer-glow 0.6s ease-in infinite alternate;}
+    }
+
+    @keyframes outer-glow {
+      from {box-shadow: 0 0 16px 2px #fff;}
+      to {box-shadow: 0 0 4px 2px #fff4;}
+    }
+  </style>
+</head>
+<body>
+  <section>
+    <i id="card-top" class="card"></i>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+    <div class="card-hand"></div>
+  </section>
+
+  <script>
+    let deckCount = [];
+    const I_CARDTOP = document.getElementById('card-top');
+    const C_CARDHAND = document.querySelectorAll('.card-hand');
+
+    I_CARDTOP.addEventListener('click', function(){
+      deckCount = [];
+      this.classList.toggle('dealing');
+      this.style.pointerEvents = 'none'
+      C_CARDHAND.forEach(e => e.classList.remove('flop'));
+    });
+
+    C_CARDHAND[2].addEventListener('transitionend', () => {
+      I_CARDTOP.style.pointerEvents = 'auto'
+    });
+
+    C_CARDHAND.forEach(e => e.addEventListener('click', function(){
+      if (this.classList.contains('flop')) return;
+      let cardNum;
+      let cardSuit = ['♠', '♥', '◆', '♣', '']
+      let cardColor;
+      for (;;) {
+        cardNum = Math.floor(Math.random() * 14);
+        if (deckCount[cardNum] !== true) {
+          deckCount[cardNum] = true;
+          cardNum++;
+          this.classList.add('flop');
+          this.classList.remove('joker');
+
+          if (cardNum === 14) {
+            this.classList.add('joker');
+          } else {
+            if (cardNum === 1) cardNum = 'A';
+            if (cardNum === 11) cardNum = 'J';
+            if (cardNum === 12) cardNum = 'Q';
+            if (cardNum === 13) cardNum = 'K';
+
+            let randomSuit = Math.floor(Math.random() * 4);
+            if (randomSuit === 0 || randomSuit === 3) cardColor = 'black';
+            else cardColor = 'red';
+
+            this.style.setProperty('--content', `'${cardNum}\\A ${cardSuit[randomSuit]}'`);
+            this.style.color = cardColor;
+          }
+
+          break;
+        }
+      }
+    }));
+  </script>
+</body>
+</html>
