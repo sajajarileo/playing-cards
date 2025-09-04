@@ -9,6 +9,7 @@
     * {transition: all 1s, background 0s, color 0s;}
     
     body {background-color: crimson;}
+    
     [class*='card'] {
       --rotateX: 0;
       --content: '';
@@ -50,7 +51,7 @@
       display: flex;
       justify-content: flex-start;
 
-      font-size: 1.25rem;
+      font-size: 1.25em;
       font-weight: bold;
       line-height: 1.4;
       text-align: center;
@@ -75,16 +76,17 @@
     }
     
     #card-top:not(.dealing):not([style*='pointer-events: none'])::after {
-      content: 'CLICK!';
+      content: 'Click!';
       position: absolute;
       left: 50%; transform: translate(-50%, -100%);
       width: 80%; height: auto;
+      padding: 0 0 12%;
       aspect-ratio: 3 / 2;
       border-radius: 0;
       background-color: #fff;
       clip-path: polygon(0% 0%, 100% 0%, 100% 80%, 65% 80%, 50% 100%, 35% 80%, 0% 80%);
       color: crimson;
-      justify-content: center;
+      justify-content: center; align-items: center;
       z-index: -1;
       cursor: default;
       animation: card-top-after 1s ease infinite alternate;
@@ -118,10 +120,13 @@
     }
 
     @media (max-width: 480px) {
+      body {font-size: 0.85em;}
       [class*='card'] {width: 100px;}
       #card-top:not(.dealing):not([style*='pointer-events: none'])::after {width: 88%;}
     }
+    
     @media (max-width: 400px) {
+      body {font-size: 0.70em;}
       [class*='card'] {width: 80px;}
       #card-top:not(.dealing):not([style*='pointer-events: none'])::after {width: 100%;}
     }
