@@ -11,6 +11,7 @@
     [class*='card'] {
       --rotate: 0;
       --rotateX: 0;
+      --width: 120px;
       --content: '';
       
       position: absolute;
@@ -19,8 +20,7 @@
       transform-style: preserve-3d;
       transition: left 1s, top 1s, transform 1s;
 
-      width: 120px;
-      aspect-ratio: 63 / 88;
+      width: var(--width); height: calc(var(--width) / 63 * 88);
       border-radius: 8%;
       background-color: #fff;
       color: #000;
@@ -128,13 +128,13 @@
 
     @media (max-width: 480px) {
       body {font-size: 0.85em;}
-      [class*='card'] {width: 100px;}
+      [class*='card'] {--width: 100px;}
       #card-top:not(.dealing):not([style*='pointer-events: none'])::after {width: 88%;}
     }
     
     @media (max-width: 400px) {
       body {font-size: 0.70em;}
-      [class*='card'] {width: 80px;}
+      [class*='card'] {--width: 80px;}
       #card-top:not(.dealing):not([style*='pointer-events: none'])::after {width: 100%;}
     }
   </style>
