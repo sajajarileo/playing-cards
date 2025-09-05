@@ -110,13 +110,13 @@
     :scope:nth-of-type(even):not(:last-of-type) {left: 20%;}
     :scope:nth-of-type(odd):not(:first-of-type) {left: 80%;}
 
-    :scope:nth-of-type(7) {transition: left 1s 0.2s, top 1s 0.2s, transform 2.4s;}
-    :scope:nth-of-type(8) {transition: left 1s 0.4s, top 1s 0.4s, transform 2.4s;}
-    :scope:nth-of-type(6) {transition: left 1s 0.6s, top 1s 0.6s, transform 2.4s;}
-    :scope:nth-of-type(4) {transition: left 1s 0.8s, top 1s 0.8s, transform 2.4s;}
-    :scope:nth-of-type(2) {transition: left 1s 1s, top 1s 1s, transform 2.4s;}
-    :scope:nth-of-type(1) {transition: left 1s 1.2s, top 1s 1.4s, transform 2.4s;}
-    :scope:nth-of-type(3) {transition: left 1s 1.4s, top 1s 1.4s, transform 2.4s;}
+    :scope:nth-of-type(7) {transition-delay: 0.2s;}
+    :scope:nth-of-type(8) {transition-delay: 0.4s;}
+    :scope:nth-of-type(6) {transition-delay: 0.6s;}
+    :scope:nth-of-type(4) {transition-delay: 0.8s;}
+    :scope:nth-of-type(2) {transition-delay: 1s;}
+    :scope:nth-of-type(1) {transition-delay: 1.2s;}
+    :scope:nth-of-type(3) {transition-delay: 1.4s;}
 
     :scope::before {animation: outer-glow 0.6s ease-in infinite alternate;}
     }
