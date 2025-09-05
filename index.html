@@ -68,11 +68,16 @@
       box-shadow: 2px 2px 4px #0008;
     }
 
-    [class*='card'].joker::after {
+    [class*='card'].joker::after,
+    [class*='card'].red_joker::after {
       content: 'J\A O\A K\A E\A R';
       background: #000 url(https://lh3.googleusercontent.com/pw/AP1GczPG_etOLYxP08IcrCm7HFSqSBTlMB2SIfQoz6NufxOjXjJMKFB7lng5M5ZI3-bdtbQvLLWgJQLQ7IkQjiID72BuWAuPDYiTsr9tnmqAifYdUGQSd6aXYFpIvOqs0VLDERSB7VlBNAdPsbQfRSTrLMs=w923-h923-s-no-gm?authuser=0) 1.3em center / calc(100% - 1.5em) no-repeat;
       color: #fff;
       align-items: center;
+    }
+    [class*='card'].red_joker::after {
+      background-color: hsl(348, 83%, 24%);
+      background-blend-mode: lighten;
     }
 
     #card-top:not(.dealing):not([style*='pointer-events: none'])::after {
@@ -167,33 +172,59 @@
       I_CARDTOP.style.pointerEvents = 'auto'
     });
 
+    let spade = Array(14).fill(false);
+    let heart = Array(14).fill(false);
+    let diamond = Array(13).fill(false);
+    let clover = Array(13).fill(false);
     C_CARDHAND.forEach(e => e.addEventListener('click', function(){
       if (this.classList.contains('flop')) return;
       let cardNum;
-      let cardSuit = ['♠', '♥', '◆', '♣', '']
+      let cardSuit;
       let cardColor;
+      let symbol = ['♠', '♥', '◆', '♣'];
       for (;;) {
         cardNum = Math.floor(Math.random() * 14);
-        if (deckCount.every(e => e === true)) deckCount = Array(14).fill(false);
-        if (deckCount[cardNum] !== true) {
-          deckCount[cardNum] = true;
+        cardSuit = Math.floor(Math.random() * 4);
+        
+        if (
+          spade.every(e => e === true) &&
+          heart.every(e => e === true) &&
+          diamond.every(e => e === true) &&
+          clover.every(e => e === true)
+        ) {
+          spade = Array(14).fill(false);
+          heart = Array(14).fill(false);
+          diamond = Array(13).fill(false);
+          clover = Array(13).fill(false);
+        }
+
+        if (
+          cardSuit === 0 && spade[cardNum] !== true ||
+          cardSuit === 1 && heart[cardNum] !== true ||
+          cardSuit === 2 && diamond[cardNum] !== true && cardNum !== 13 ||
+          cardSuit === 3 && clover[cardNum] !== true && cardNum !== 13
+        ) {
+          if (cardSuit === 0) spade[cardNum] = true;
+          else if (cardSuit === 1) heart[cardNum] = true;
+          else if (cardSuit === 2) diamond[cardNum] = true;
+          else if (cardSuit === 3) clover[cardNum] = true;
+
           cardNum++;
           this.classList.add('flop');
           this.classList.remove('joker');
+          this.classList.remove('red_joker');
 
           if (cardNum === 14) {
-            this.classList.add('joker');
+            cardSuit === 0 ? this.classList.add('joker') : this.classList.add('red_joker');
           } else {
             if (cardNum === 1) cardNum = 'A';
             if (cardNum === 11) cardNum = 'J';
             if (cardNum === 12) cardNum = 'Q';
             if (cardNum === 13) cardNum = 'K';
-
-            let randomSuit = Math.floor(Math.random() * 4);
-            if (randomSuit === 0 || randomSuit === 3) cardColor = 'black';
+            if (cardSuit === 0 || cardSuit === 3) cardColor = 'black';
             else cardColor = 'red';
 
-            this.style.setProperty('--content', `'${cardNum}\\A ${cardSuit[randomSuit]}'`);
+            this.style.setProperty('--content', `'${cardNum}\\A ${symbol[cardSuit]}'`);
             this.style.color = cardColor;
           }
           break;
