@@ -153,12 +153,11 @@
   </section>
 
   <script>
-    let deckCount = [];
+    let deckCount = Array(14).fill(false);
     const I_CARDTOP = document.getElementById('card-top');
     const C_CARDHAND = document.querySelectorAll('.card-hand');
 
     I_CARDTOP.addEventListener('click', function(){
-      deckCount = [];
       this.classList.toggle('dealing');
       this.style.pointerEvents = 'none'
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
@@ -175,6 +174,7 @@
       let cardColor;
       for (;;) {
         cardNum = Math.floor(Math.random() * 14);
+        if (deckCount.every(e => e === true)) deckCount = Array(14).fill(false);
         if (deckCount[cardNum] !== true) {
           deckCount[cardNum] = true;
           cardNum++;
@@ -196,7 +196,6 @@
             this.style.setProperty('--content', `'${cardNum}\\A ${cardSuit[randomSuit]}'`);
             this.style.color = cardColor;
           }
-
           break;
         }
       }
