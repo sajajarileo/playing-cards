@@ -30,7 +30,6 @@
     
     #card-top {
       transition: border 80ms;
-      /* transition: opacity 1s; */
       border-right: solid 16px #ddd;
       border-bottom: solid 12px #bbb;
       box-shadow: 2px 2px 4px #0008;
@@ -153,7 +152,7 @@
 </head>
 <body>
   <section>
-    <i id="card-top" class="card running-out"></i>
+    <i id="card-top" class="card"></i>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
@@ -194,7 +193,7 @@
       }
       if (cardLeft() === 0 && this.classList.contains('dealing')) {
         shuffle();
-        // this.classList.remove('running-out');
+        this.classList.remove('running-out');
       }
     });
 
