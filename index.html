@@ -29,7 +29,7 @@
     }
     
     #card-top {
-      transition: left 1s, top 1s;
+      transition: border 60ms;
       border-right: solid 16px #ddd;
       border-bottom: solid 12px #bbb;
       box-shadow: 2px 2px 4px #0008;
@@ -96,23 +96,6 @@
       cursor: default;
       animation: card-top-after 1s ease infinite alternate;
     }
-
-    #card-counter {
-      position: absolute;
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-      margin: 0;
-      width: 80%; height: calc(var(--width) * 0.3);
-      border-radius: inherit;
-      background-color: #fff;
-      font-style: normal;
-      text-align: center;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #card-top.dealing[style*='pointer-events: none'] #card-counter {display: none;}
     
     @keyframes card-top-after {
       from {top: -8px;}
@@ -125,22 +108,28 @@
     }
 
     #card-top.dealing {transition: transform 2.4s;}
+    #card-top.running-out.dealing,
+    #card-top.running-out[style*='pointer-events: none'] {
+      border-right: solid 0px #ddd;
+      border-bottom: solid 0px #bbb;
+      opacity: 0.6;
+    }
+    
+    .dealing ~ .card-hand {
+    &:nth-of-type(-n + 3) {top: 20%;}
+    &:nth-last-of-type(-n + 3) {top: 80%;}
+    &:nth-of-type(even):not(:last-of-type) {left: 20%;}
+    &:nth-of-type(odd):not(:first-of-type) {left: 80%;}
 
-    @scope (.dealing ~ .card-hand) {
-    :scope:nth-of-type(-n + 3) {top: 20%;}
-    :scope:nth-last-of-type(-n + 3) {top: 80%;}
-    :scope:nth-of-type(even):not(:last-of-type) {left: 20%;}
-    :scope:nth-of-type(odd):not(:first-of-type) {left: 80%;}
-
-    :scope:nth-of-type(7) {transition: left 1s 0.2s, top 1s 0.2s, transform 2.4s;}
-    :scope:nth-of-type(8) {transition: left 1s 0.4s, top 1s 0.4s, transform 2.4s;}
-    :scope:nth-of-type(6) {transition: left 1s 0.6s, top 1s 0.6s, transform 2.4s;}
-    :scope:nth-of-type(4) {transition: left 1s 0.8s, top 1s 0.8s, transform 2.4s;}
-    :scope:nth-of-type(2) {transition: left 1s 1s, top 1s 1s, transform 2.4s;}
-    :scope:nth-of-type(1) {transition: left 1s 1.2s, top 1s 1.4s, transform 2.4s;}
-    :scope:nth-of-type(3) {transition: left 1s 1.4s, top 1s 1.4s, transform 2.4s;}
-
-    :scope::before {animation: outer-glow 0.6s ease-in infinite alternate;}
+    &:nth-of-type(7) {transition: left 1s 0.2s, top 1s 0.2s, transform 2.4s;}
+    &:nth-of-type(8) {transition: left 1s 0.4s, top 1s 0.4s, transform 2.4s;}
+    &:nth-of-type(6) {transition: left 1s 0.6s, top 1s 0.6s, transform 2.4s;}
+    &:nth-of-type(4) {transition: left 1s 0.8s, top 1s 0.8s, transform 2.4s;}
+    &:nth-of-type(2) {transition: left 1s 1s, top 1s 1s, transform 2.4s;}
+    &:nth-of-type(1) {transition: left 1s 1.2s, top 1s 1.4s, transform 2.4s;}
+    &:nth-of-type(3) {transition: left 1s 1.4s, top 1s 1.4s, transform 2.4s;}
+    
+    &::before {animation: outer-glow 0.6s ease-in infinite alternate;}
     }
     
     @keyframes outer-glow {
@@ -163,9 +152,7 @@
 </head>
 <body>
   <section>
-    <i id="card-top" class="card">
-      <p id="card-counter"></p>
-    </i>
+    <i id="card-top" class="card"></i>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
@@ -180,7 +167,6 @@
     let deck;
 
     const I_CARDTOP = document.getElementById('card-top');
-    const I_COUNTER = document.getElementById('card-counter');
     const C_CARDHAND = document.querySelectorAll('.card-hand');
 
     function shuffle(){
@@ -194,21 +180,21 @@
       return result;
     } cardLeft();
 
-    function setCounter(){
-      I_COUNTER.innerText = `${cardLeft()} / ${deck.join('').length}`;
-    } setCounter();
-
     I_CARDTOP.addEventListener('click', function(){
       this.classList.toggle('dealing');
       this.style.pointerEvents = 'none'
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
       
       if (cardLeft() < C_CARDHAND.length && this.classList.contains('dealing')) {
+        this.classList.add('running-out');
         for (let i = 0; i < C_CARDHAND.length - cardLeft(); i++) {
           C_CARDHAND[i].style.visibility = 'hidden';
         }
       }
-      if (cardLeft() === 0 && this.classList.contains('dealing')) shuffle();
+      if (cardLeft() === 0 && this.classList.contains('dealing')) {
+        shuffle();
+        this.classList.remove('running-out');
+      }
     });
 
     C_CARDHAND[2].addEventListener('transitionend', () => {
@@ -238,7 +224,6 @@
           this.classList.add('flop');
           this.classList.remove('joker');
           this.classList.remove('red_joker');
-          setCounter();
 
           if (cardNum === deck.length - 1) {
             cardSuit === 0 ? this.classList.add('joker') : this.classList.add('red_joker');
