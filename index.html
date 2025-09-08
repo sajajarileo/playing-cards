@@ -96,6 +96,23 @@
       cursor: default;
       animation: card-top-after 1s ease infinite alternate;
     }
+
+    #card-counter {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      width: 80%; height: calc(var(--width) * 0.3);
+      border-radius: inherit;
+      background-color: #fff;
+      font-style: normal;
+      text-align: center;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #card-top.dealing[style*='pointer-events: none'] #card-counter {display: none;}
     
     @keyframes card-top-after {
       from {top: -8px;}
@@ -146,7 +163,9 @@
 </head>
 <body>
   <section>
-    <i id="card-top" class="card"></i>
+    <i id="card-top" class="card">
+      <p id="card-counter"></p>
+    </i>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
     <div class="card-hand"></div>
@@ -158,20 +177,38 @@
   </section>
 
   <script>
-    let cardLeft;
+    let deck;
 
     const I_CARDTOP = document.getElementById('card-top');
+    const I_COUNTER = document.getElementById('card-counter');
     const C_CARDHAND = document.querySelectorAll('.card-hand');
 
     function shuffle(){
-      cardLeft = Array(14).fill('ffff');
-      cardLeft[cardLeft.length - 1] = 'ff'
+      deck = Array(14).fill('ffff');
+      deck[deck.length - 1] = 'ff'
+      C_CARDHAND.forEach(e => e.style.visibility = 'visible');
     } shuffle();
+
+    function cardLeft(){
+      let result = (deck.join('').match(/f/g) || []).length;
+      return result;
+    } cardLeft();
+
+    function setCounter(){
+      I_COUNTER.innerText = `${cardLeft()} / ${deck.join('').length}`;
+    } setCounter();
 
     I_CARDTOP.addEventListener('click', function(){
       this.classList.toggle('dealing');
       this.style.pointerEvents = 'none'
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
+      
+      if (cardLeft() < C_CARDHAND.length && this.classList.contains('dealing')) {
+        for (let i = 0; i < C_CARDHAND.length - cardLeft(); i++) {
+          C_CARDHAND[i].style.visibility = 'hidden';
+        }
+      }
+      if (cardLeft() === 0 && this.classList.contains('dealing')) shuffle();
     });
 
     C_CARDHAND[2].addEventListener('transitionend', () => {
@@ -183,25 +220,27 @@
       let cardSuit;
       let cardColor;
       let symbol = ['♠', '♥', '◆', '♣'];
-      if (this.classList.contains('flop')) return;
+      if (this.classList.contains('flop') ||
+      !I_CARDTOP.classList.contains('dealing')) return;
 
       for (;;) {
-        if (cardLeft.every(e => /^t+$/.test(e))) shuffle();
+        // if (deck.every(e => /^t+$/.test(e))) shuffle();
         cardNum = Math.floor(Math.random() * 14);
         cardSuit = Math.floor(Math.random() * 4);
-        if (cardNum === cardLeft.length - 1)
+        if (cardNum === deck.length - 1)
         cardSuit < 2 ? cardSuit = 0 : cardSuit = 1;
 
-        if (cardLeft[cardNum][cardSuit] === 'f') {
-          let count = cardLeft[cardNum].split('');
+        if (deck[cardNum][cardSuit] === 'f') {
+          let count = deck[cardNum].split('');
           count[cardSuit] = 't';
-          cardLeft[cardNum] = count.join('');
+          deck[cardNum] = count.join('');
 
           this.classList.add('flop');
           this.classList.remove('joker');
           this.classList.remove('red_joker');
+          setCounter();
 
-          if (cardNum === cardLeft.length - 1) {
+          if (cardNum === deck.length - 1) {
             cardSuit === 0 ? this.classList.add('joker') : this.classList.add('red_joker');
           } else {
             if (cardNum === 0) cardNum = 'A';
