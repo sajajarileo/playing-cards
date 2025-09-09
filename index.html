@@ -29,7 +29,7 @@
     }
     
     #card-top {
-      transition: border 80ms;
+      transition: none;
       border-right: solid 16px #ddd;
       border-bottom: solid 12px #bbb;
       box-shadow: 2px 2px 4px #0008;
@@ -107,13 +107,9 @@
       --rotate: 360deg;
     }
 
-    #card-top.dealing {transition: transform 2.4s;}
+    #card-top.dealing {transition: transform 2.4s, opacity 1s;}
     #card-top.running-out.dealing,
-    #card-top.running-out[style*='pointer-events: none'] {
-      border-right: solid 0px #ddd;
-      border-bottom: solid 0px #bbb;
-      opacity: 0.6;
-    }
+    #card-top.running-out[style*='pointer-events: none'] {opacity: 0.6;}
     
     .dealing ~ .card-hand {
     &:nth-of-type(-n + 3) {top: 20%;}
