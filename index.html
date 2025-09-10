@@ -182,14 +182,15 @@
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
       
       if (cardLeft() < C_CARDHAND.length && this.classList.contains('dealing')) {
+        if (cardLeft() === 0) {
+          shuffle();
+          this.classList.remove('running-out');
+          return;
+        }
         this.classList.add('running-out');
         for (let i = 0; i < C_CARDHAND.length - cardLeft(); i++) {
           C_CARDHAND[i].style.visibility = 'hidden';
         }
-      }
-      if (cardLeft() === 0 && this.classList.contains('dealing')) {
-        shuffle();
-        this.classList.remove('running-out');
       }
     });
 
