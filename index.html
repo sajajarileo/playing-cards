@@ -180,9 +180,6 @@
       this.classList.toggle('dealing');
       this.style.pointerEvents = 'none'
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
-
-      if (this.classList.contains('dealing'))
-      C_CARDHAND.forEach(e => e.addEventListener('click', cardFlop));
       
       if (cardLeft() < C_CARDHAND.length && this.classList.contains('dealing')) {
         if (cardLeft() === 0) {
@@ -209,8 +206,8 @@
       let cardColor;
       let symbol = ['♠', '♥', '◆', '♣'];
 
-      // if (this.classList.contains('flop') ||
-      // !I_CARDTOP.classList.contains('dealing')) return;
+      if (this.classList.contains('flop') ||
+      !I_CARDTOP.classList.contains('dealing')) return;
       
       for (;;) {
         cardNum = Math.floor(Math.random() * 14);
@@ -240,8 +237,7 @@
           this.style.color = 'black' : this.style.color = 'red';
           this.style.setProperty('--content', `'${cardNum}\\A ${symbol[cardSuit]}'`);
         }
-
-        this.removeEventListener('click', cardFlop);
+        
         break;
       }
     }
