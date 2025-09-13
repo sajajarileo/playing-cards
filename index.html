@@ -180,6 +180,9 @@
       this.classList.toggle('dealing');
       this.style.pointerEvents = 'none'
       C_CARDHAND.forEach(e => e.classList.remove('flop'));
+
+      if (this.classList.contains('dealing'))
+      C_CARDHAND.forEach(e => e.addEventListener('click', cardFlop));
       
       if (cardLeft() < C_CARDHAND.length && this.classList.contains('dealing')) {
         if (cardLeft() === 0) {
@@ -198,46 +201,50 @@
       I_CARDTOP.style.pointerEvents = 'auto'
     });
 
-    C_CARDHAND.forEach(e => e.addEventListener('click', function(){
+    C_CARDHAND.forEach(e => e.addEventListener('click', cardFlop));
+
+    function cardFlop(){
       let cardNum;
       let cardSuit;
       let cardColor;
       let symbol = ['♠', '♥', '◆', '♣'];
-      if (this.classList.contains('flop') ||
-      !I_CARDTOP.classList.contains('dealing')) return;
 
+      // if (this.classList.contains('flop') ||
+      // !I_CARDTOP.classList.contains('dealing')) return;
+      
       for (;;) {
-        // if (deck.every(e => /^t+$/.test(e))) shuffle();
         cardNum = Math.floor(Math.random() * 14);
-        cardSuit = Math.floor(Math.random() * 4);
-        if (cardNum === deck.length - 1)
-        cardSuit < 2 ? cardSuit = 0 : cardSuit = 1;
+        cardSuit = Math.floor(Math.random() * deck[cardNum].length);
 
-        if (deck[cardNum][cardSuit] === 'f') {
-          let count = deck[cardNum].split('');
-          count[cardSuit] = 't';
-          deck[cardNum] = count.join('');
+        if (deck[cardNum][cardSuit] === 't') continue;
+        
+        let count = deck[cardNum].split('');
+        count[cardSuit] = 't';
+        deck[cardNum] = count.join('');
 
-          this.classList.add('flop');
-          this.classList.remove('joker');
-          this.classList.remove('red_joker');
+        this.classList.add('flop');
+        this.classList.remove('joker', 'red_joker');
 
-          if (cardNum === deck.length - 1) {
-            cardSuit === 0 ? this.classList.add('joker') : this.classList.add('red_joker');
-          } else {
-            if (cardNum === 0) cardNum = 'A';
-            else if (cardNum === 10) cardNum = 'J';
-            else if (cardNum === 11) cardNum = 'Q';
-            else if (cardNum === 12) cardNum = 'K';
-            else cardNum++;
-            cardSuit === 0 || cardSuit === 3 ? cardColor = 'black' : cardColor = 'red';
-            this.style.setProperty('--content', `'${cardNum}\\A ${symbol[cardSuit]}'`);
-            this.style.color = cardColor;
-          }
-          break;
+        if (cardNum === deck.length - 1) {
+          cardSuit === 0 ?
+          this.classList.add('joker')
+          : this.classList.add('red_joker');
         }
+        else {
+          if (cardNum === 0) cardNum = 'A';
+          else if (cardNum === 10) cardNum = 'J';
+          else if (cardNum === 11) cardNum = 'Q';
+          else if (cardNum === 12) cardNum = 'K';
+          else cardNum++;
+          cardSuit === 0 || cardSuit === 3 ?
+          this.style.color = 'black' : this.style.color = 'red';
+          this.style.setProperty('--content', `'${cardNum}\\A ${symbol[cardSuit]}'`);
+        }
+
+        this.removeEventListener('click', cardFlop);
+        break;
       }
-    }));
+    }
   </script>
 </body>
 </html>
